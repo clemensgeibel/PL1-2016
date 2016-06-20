@@ -169,38 +169,41 @@ trait Monad[M[_]] {
   //    1b) bind(x, y => unit(y)) == x
   // 2) Bind enjoys an associative property
   //     bind(bind(x,f),g) == bind(x, y => bind(f(y),g))
-  implicit def monadicSyntax[A](m: M[A]) = new {
-    def map[B](f: A => B) = bind(m, (x: A) => unit(f(x)))
-    def flatMap[B](f: A => M[B]) : M[B] = bind(m,f)
-  }    
+}
+implicit def monadicSyntax[A, M[_]](m: M[A])(implicit mm: Monad[M]) = new {
+  def map[B](f: A => B) = mm.bind(m, (x: A) => mm.unit(f(x)))
+  def flatMap[B](f: A => M[B]): M[B] = mm.bind(m, f)
 }
 
-/** 
-Using the new support for for-comprehension syntax, we can rewrite our client code as follows: Given the API from above,
-*/
+/**
+  * Using the new support for for-comprehension syntax, we can rewrite
+  * the parametric version of our client code as follows: Given the API from above,
+  */
 
-def f(n: Int) : Option[String] = if (n < 100) Some("x") else None
-def g(x: String) : Option[Boolean] = Some(x == "x")
-def h(b: Boolean) : Option[Int] = if (b) Some(27) else None
+def f[M[_]](n: Int)(implicit m: Monad[M]): M[String] = sys.error("not implemented")
+def g[M[_]](x: String)(implicit m: Monad[M]): M[Boolean] = sys.error("not implemented")
+def h[M[_]](b: Boolean)(implicit m: Monad[M]): M[Int] = sys.error("not implemented")
 
 /** 
 we can now rewrite this:
 */
 
-def clientCode(implicit m: Monad[Option]) =
-  bindOption(f(27), ((x: String) =>
-  bindOption(g(x+"z"), ((y: Boolean) =>
-  Some(!y)))))
+def clientCode[M[_]](implicit m: Monad[M]) =
+  m.bind(f(27), (x: String) =>
+  m.bind(g(x+"z"), (y: Boolean) =>
+  m.bind(h(!y), (z: Boolean) =>
+  m.unit(z))))
   
 /** 
 to this:  
 */
     
-def clientCode(implicit m: Monad[Option]) =
+def clientCode[M[_]](implicit m: Monad[M]) =
   for {
     x <- f(27)
-    y <- g(x+"z")
-  } yield !y
+    y <- g(x + "z")
+    z <- h(!y)
+  } yield z
 
   
 /** 
