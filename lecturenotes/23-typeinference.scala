@@ -1,4 +1,4 @@
-
+// Hindley-Milner type inference with let-polymorphism
 
 sealed abstract class Type
 case class FunType(from: Type, to: Type) extends Type
@@ -13,12 +13,13 @@ def freeTypeVars(t: Type) : Set[Symbol] = t match {
 
 case class Substitution(m: Map[Symbol,Type]) extends Function[Type,Type] {
   def apply(t: Type) = t match {
-  case FunType(from,to) => FunType(this(from),this(to))
-  case NumType() => NumType()
-  case TypeVar(x) => m.getOrElse(x,TypeVar(x))
+    case FunType(from,to) => FunType(this(from),this(to))
+    case NumType() => NumType()
+    case TypeVar(x) => m.getOrElse(x,TypeVar(x))
   }
 }
 
+// Robinson unification algorithm
 
 def unify(eq: List[(Type,Type)]) : Type => Type = eq match {
   case Nil => Substitution(Map.empty)
