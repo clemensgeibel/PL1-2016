@@ -134,3 +134,12 @@ def eval(e: Exp) : Exp = e match {
 assert(doTypeCheck(42,Map.empty) == NumType())
 assert(doTypeCheck(Fun('x,Add('x,1)),Map.empty) == FunType(NumType(),NumType()))
 assert(doTypeCheck(Let('id, Fun('x,'x), App(App('id,Fun('x,Add('x,1))),App('id,42))),Map.empty) == NumType())
+
+// Completeness of type inference:
+// If there exist type annotations that make a program type-check in the STLC type checker,
+// then the type inference will also be able to type-check the non-annotated version of the program.
+
+// Due to let-polymorphism, this program also type-checks some programs that would be ill-formed in STLC
+
+// The type system is still sound: 
+// If doTypeCheck(e,Map.empty) == t, then eval(e) == v and doTypeCheck(v) == t
