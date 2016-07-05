@@ -82,7 +82,7 @@ def subst(e1 : Exp, x: Symbol, e2: Exp) : Exp = e1 match {
 }
 
 var tyvCount : Int = 0
-def freshTypeVar : TypeVar = {
+def freshTypeVar(): TypeVar = {
   tyvCount += 1
   TypeVar(Symbol("X"+tyvCount.toString))
 }
