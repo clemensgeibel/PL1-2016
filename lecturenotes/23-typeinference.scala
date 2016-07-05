@@ -11,24 +11,24 @@ def freeTypeVars(t: Type) : Set[Symbol] = t match {
   case TypeVar(x) => Set(x)
 }
 
-case class Substitution(m: Map[Symbol,Type]) extends Function[Type,Type] {
+def substitution(x: Symbol, s: Type) = new Function[Type,Type] {
   def apply(t: Type) = t match {
     case FunType(from,to) => FunType(this(from),this(to))
     case NumType() => NumType()
-    case TypeVar(x) => m.getOrElse(x,TypeVar(x))
+    case TypeVar(y) => if (x==y) s else TypeVar(y)
   }
-}
+}  
 
 // Robinson unification algorithm
 
 def unify(eq: List[(Type,Type)]) : Type => Type = eq match {
-  case Nil => Substitution(Map.empty)
+  case Nil => identity _
   case (NumType(),NumType()) :: rest => unify(rest)
   case (FunType(f1,t1),FunType(f2,t2)) :: rest => unify((f1,f2) :: (t1,t2) :: rest)
   case (TypeVar(x),TypeVar(y)) :: rest if x == y => unify(rest)
   case (TypeVar(x),t) :: rest => {
     if (freeTypeVars(t)(x)) sys.error(s"Occurs check: $x occurs in $t")
-    val s = Substitution(Map(x -> t))
+    val s = substitution(x,t)
     s.andThen(unify(rest.map(p => (s(p._1),s(p._2)))))
   }
   case (t,TypeVar(x)) :: rest => unify((TypeVar(x),t) :: rest)
@@ -133,7 +133,13 @@ def eval(e: Exp) : Exp = e match {
 
 assert(doTypeCheck(42,Map.empty) == NumType())
 assert(doTypeCheck(Fun('x,Add('x,1)),Map.empty) == FunType(NumType(),NumType()))
+
+// test let-polymorphism: The identity function is once applied to a function and once to a number
 assert(doTypeCheck(Let('id, Fun('x,'x), App(App('id,Fun('x,Add('x,1))),App('id,42))),Map.empty) == NumType())
+
+// this should trigger an occurs check error:
+// doTypeCheck(Fun('x,App('x,'x)),Map.empty)
+// Hence omega cannot be type-checked in STLC
 
 // Completeness of type inference:
 // If there exist type annotations that make a program type-check in the STLC type checker,
