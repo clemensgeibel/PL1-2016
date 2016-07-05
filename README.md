@@ -51,6 +51,7 @@ Homework
  * [8th homework](exercises/08Hw.scala)
  * [9th homework](exercises/09Hw.md). This is in *Markdown format*, hence
    designed to be viewed in the browser from GitHub.
+ * [10th homework](exercises/10Hw.md), again in *Markdown format*.
 
 Homework policy: to be admitted to the exam, hand in reasonable solutions to all but two homeworks.
 
