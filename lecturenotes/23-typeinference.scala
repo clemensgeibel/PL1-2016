@@ -108,8 +108,9 @@ def typeCheck(e: Exp, gamma: Map[Symbol,Type]) : (List[(Type,Type)],Type) = e ma
     }
   }
   case Let(x,xdef,body) => {
-    typeCheck(xdef,gamma) // important if x is not used in body
-    typeCheck(subst(body,x,xdef),gamma) // Let-Polymorphism!
+    val (constraints1, _) = typeCheck(xdef, gamma) // important if x is not used in body
+    val (constraints2, typ) = typeCheck(subst(body, x, xdef), gamma) // Let-Polymorphism!
+    (constraints1 ++ constraints2, typ)
   }
 
 }
