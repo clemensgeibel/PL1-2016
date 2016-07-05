@@ -38,6 +38,11 @@ Schedule
  * June 27. Lecture: [Defunctionalization](lecturenotes/20-defunctionalization.scala)
  * June 30. Lecture: [Type Systems](lecturenotes/21-typesystems.scala)
  * July 4. Lecture: [Simply-typed Lambda Calculus](lecturenotes/22-stlc.scala)
+ * July 6. Exercise.
+ * July 7. Lecture.
+ * July 11. Lecture
+ * July 13. Exercise.
+ * July 14. Lecture.
 
 
 Homework
@@ -51,7 +56,7 @@ Homework
  * [8th homework](exercises/08Hw.scala)
  * [9th homework](exercises/09Hw.md). This is in *Markdown format*, hence
    designed to be viewed in the browser from GitHub.
- * [10th homework](exercises/10Hw.md), again in *Markdown format*.
+ * [10th homework](exercises/10Hw.md), again in *Markdown format*. This is the last homework.
 
 Homework policy: to be admitted to the exam, hand in reasonable solutions to all but two homeworks.
 
