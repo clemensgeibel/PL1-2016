@@ -115,8 +115,8 @@ def typeCheck(e: Exp, gamma: Map[Symbol,Type]) : (List[(Type,Type)],Type) = e ma
 }
 
 def doTypeCheck(e: Exp, gamma: Map[Symbol,Type]) = {
-  val tc = typeCheck(e,gamma)
-  unify(tc._1)(tc._2)
+  val (constraints, resType) = typeCheck(e, gamma)
+  unify(constraints)(resType)
 }
 
 def eval(e: Exp) : Exp = e match {
