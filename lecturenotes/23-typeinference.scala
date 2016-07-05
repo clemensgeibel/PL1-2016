@@ -107,7 +107,10 @@ def typeCheck(e: Exp, gamma: Map[Symbol,Type]) : (List[(Type,Type)],Type) = e ma
       case ((eqs1,ft),(eqs2,at)) => ((ft,FunType(at,toType)) :: (eqs1++eqs2),toType)
     }
   }
-  case Let(x,xdef,body) => typeCheck(subst(body,x,xdef),gamma) // Let-Polymorphism!
+  case Let(x,xdef,body) => {
+    typeCheck(xdef,gamma) // important if x is not used in body
+    typeCheck(subst(body,x,xdef),gamma) // Let-Polymorphism!
+  }
 
 }
 
