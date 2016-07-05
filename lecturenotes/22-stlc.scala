@@ -38,8 +38,8 @@ case class Product(e1: Exp, e2: Exp) extends Exp
 case class Fst(e: Exp) extends Exp
 case class Snd(e: Exp) extends Exp
 
-case class Left(left: Exp, right: Type) extends Exp
-case class Right(left: Type, right: Exp) extends Exp
+case class SumLeft(left: Exp, right: Type) extends Exp
+case class SumRight(left: Type, right: Exp) extends Exp
 case class EliminateSum(e: Exp, fl: Exp, fr: Exp) extends Exp
 
 
@@ -62,8 +62,8 @@ def freeVars(e: Exp) : Set[Symbol] =  e match {
    case Product(e1,e2) => freeVars(e1) ++ freeVars(e2)
    case Fst(e) => freeVars(e)
    case Snd(e) => freeVars(e)
-   case Left(e,_) => freeVars(e)
-   case Right(_,e) => freeVars(e)
+   case SumLeft(e,_) => freeVars(e)
+   case SumRight(_,e) => freeVars(e)
    case EliminateSum(e,fl,fr) => freeVars(e) ++ freeVars(fl) ++ freeVars(fr)
 }
 
@@ -89,8 +89,8 @@ def subst(e1 : Exp, x: Symbol, e2: Exp) : Exp = e1 match {
   case Product(a,b) => Product(subst(a,x,e2),subst(b,x,e2))
   case Fst(e) => Fst(subst(e,x,e2))
   case Snd(e) => Snd(subst(e,x,e2))
-  case Left(e,t) => Left(subst(e,x,e2),t)
-  case Right(t,e) => Right(t,subst(e,x,e2))
+  case SumLeft(e,t) => SumLeft(subst(e,x,e2),t)
+  case SumRight(t,e) => SumRight(t,subst(e,x,e2))
   case EliminateSum(e,fl,fr) => EliminateSum(subst(e,x,e2),subst(fl,x,e2),subst(fr,x,e2))
 }
 
@@ -115,11 +115,11 @@ def eval(e: Exp) : Exp = e match {
     case Product(a,b) => b
     case _ => sys.error("can only apply Snd to products")
   }
-  case Left(e,t) => Left(eval(e),t)
-  case Right(t,e) => Right(t,eval(e))
+  case SumLeft(e,t) => SumLeft(eval(e),t)
+  case SumRight(t,e) => SumRight(t,eval(e))
   case EliminateSum(e,fl,fr) => eval(e) match {
-    case Left(e2,_) => eval(App(fl,e2))
-    case Right(_,e2) => eval(App(fr,e2))
+    case SumLeft(e2,_) => eval(App(fl,e2))
+    case SumRight(_,e2) => eval(App(fr,e2))
     case _ => sys.error("can only eliminate sums")
   }
   case _ => e // numbers and functions evaluate to themselves
@@ -172,8 +172,8 @@ def typeCheck(e: Exp, gamma: Map[Symbol,Type]) : Type = e match {
     case ProductType(t1,t2) => t2
     case _ => sys.error("can only project Products")
   }
-  case Left(e,t) => SumType(typeCheck(e,gamma), t)
-  case Right(t,e) => SumType(t, typeCheck(e,gamma))
+  case SumLeft(e,t) => SumType(typeCheck(e,gamma), t)
+  case SumRight(t,e) => SumType(t, typeCheck(e,gamma))
   case EliminateSum(e,fl,fr) => typeCheck(e,gamma) match {
     case SumType(left,right) => (typeCheck(fl,gamma), typeCheck(fr,gamma)) match {
       case (FunType(left,t1),FunType(right,t2)) =>
