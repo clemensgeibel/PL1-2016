@@ -152,4 +152,4 @@ assert(doTypeCheck(Let('id, Fun('x,'x), App(App('id,Fun('x,Add('x,1))),App('id,4
 // Due to let-polymorphism, this program also type-checks some programs that would be ill-formed in STLC
 
 // The type system is still sound: 
-// If doTypeCheck(e,Map.empty) == t, then eval(e) == v and doTypeCheck(v) == t
+// If doTypeCheck(e,Map.empty) == t, then eval(e) == v and doTypeCheck(v) == t (modulo alpha-renaming of type variables)
