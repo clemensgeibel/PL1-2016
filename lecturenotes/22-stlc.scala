@@ -176,8 +176,14 @@ def typeCheck(e: Exp, gamma: Map[Symbol,Type]) : Type = e match {
   case SumRight(t,e) => SumType(t, typeCheck(e,gamma))
   case EliminateSum(e,fl,fr) => typeCheck(e,gamma) match {
     case SumType(left,right) => (typeCheck(fl,gamma), typeCheck(fr,gamma)) match {
-      case (FunType(leftf,t1),FunType(rightf,t2)) if left == leftf && right == rightf =>
-        if (t1 == t2) t1 else sys.error("type error: functions must have same return type")
+      case (FunType(leftf,t1),FunType(rightf,t2)) =>
+        if (left == leftf && right == rightf) {
+          if (t1 == t2) t1 else sys.error("type error: functions must have same return type")
+        } else if (left != leftf) {
+          sys.error("type error in EliminateSum: second argument must be a function accepting " + left)
+        } else {
+          sys.error("type error in EliminateSum: third argument must be a function accepting " + right)
+        }
       case _ => sys.error("type error in EliminateSum: second and third argument must be functions")
     }
     case _ => sys.error("type error: can only eliminate sums")
