@@ -1,14 +1,41 @@
 import scala.language.higherKinds
 import scala.language.implicitConversions
 
-object Hw08Sol {
+//Reminder on what for-comprehensions mean and how they are desugared.
+object ForComprehensionDesugaring {
+  def exV1(l1: List[Int], l2: List[Int]): List[Int] = {
+    for {
+      x <- l1
+      y <- l2
+    } yield x + y
+  }
+  def exV2(l1: List[Int], l2: List[Int]): List[Int] =
+    l1.flatMap { x =>
+      for {
+        y <- l2
+      } yield x + y
+    }
+  //def map(f: A => B) = flatMap(x => List(f(x))
+  def exV3(l1: List[Int], l2: List[Int]): List[Int] =
+    l1.flatMap { x =>
+      l2.map { y =>
+        x + y
+      }
+      //That code behaves equivalently to:
+//      l2.flatMap { y =>
+//        List(x + y)
+//      }
+    }
+}
 
+object Hw08Sol {
   // A common interface for all monads:
   trait Monad {
     type M[_]
     def unit[A](a: A): M[A]
     def bind[A, B](p: M[A], f: A => M[B]): M[B]
 
+    //This code adds methods map and flatMap on values of type M[A].
     implicit class monadicSyntax[A](p: M[A]) {
       def flatMap[B](f: A => M[B]) = bind(p, f)
       def map[B](f: A => B) = flatMap(x => unit(f(x)))
@@ -127,9 +154,11 @@ object Hw08Sol {
 
     override def eval(e: Exp): M[Value] = e match {
       //PG: finish the implementation
-      case f @ Fun(param, body) => for {
-        env <- ask
-      } yield ClosureV(f, env)
+      case f @ Fun(param, body) =>
+        for {
+          env <- ask
+        } yield ClosureV(f, env)
+        //ask.map(env => ClosureV(f, env))
 
       case App(f, a) => for {
         fv <- eval(f)
@@ -137,6 +166,7 @@ object Hw08Sol {
         result <- fv match {
           case ClosureV(Fun(param, body), env) =>
             local(_ => env + (param -> av), eval(body))
+            //eval(body)(env + (param -> av))
           case _ => sys.error("can only apply functions")
         }
       } yield result
