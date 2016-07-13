@@ -1,7 +1,6 @@
 object Hw10Sol {
   //TASK 3
   object STLCWithTuplesRecords {
-
     sealed abstract class Type
 
     sealed abstract class Exp
@@ -189,6 +188,24 @@ object Hw10Sol {
 
     //TASK 1
     val boolT = SumType(JunitType(), JunitType())
+    //This type is isomorphic to Boolean because, like Boolean, it has two
+    //values, that are:
+    val v1 = SumLeft(Junit(), JunitType())
+    val v2 = SumRight(JunitType(), Junit())
+    //so we can create a computable isomorphism (that is, an invertible
+    //mapping) by mapping v1 to true and v2 to false.
+    //Then, we can translate programs on booleans to programs on boolT using
+    //this mapping consistently: everywhere we use true, we change the
+    //program to use v1, and translate the boolean primitives this way.
+    //
+    //There's also another isomorphism mapping v1 to false and v2 to true; we
+    //need to pick one isomorphism and use it consistently, but which we pick is
+    //just a matter of convention.
+
+    //corresponding to:
+    val v1Scala: Either[Unit, Unit] = Left(())
+    val v2Scala: Either[Unit, Unit] = Right(())
+
 
     //TASK 2
     //Typecheck by hand the following STLC expressions.
@@ -202,6 +219,7 @@ object Hw10Sol {
         Console.println(s"${Console.BLUE}Expression $e had type $tActual as expected.${Console.RESET}")
       }
     }
+
     val plusOneOpen: Exp = Add('x, 1)
     //In the following context:
     val plusOneOpenCtx: Map[Symbol, Type] = Map('x -> NumType())
