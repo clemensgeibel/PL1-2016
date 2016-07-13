@@ -105,9 +105,9 @@ case class CPSFun(x: Symbol, k: Symbol, body: CPSExp) extends CPSVal
 case class CPSVar(x: Symbol) extends CPSVal { override def toString = x.toString }
 implicit def id2cpsexp(x: Symbol) = CPSVar(x)
 
-case class CPSContApp(k: CPSVal, a: CPSExp) extends CPSExp
+case class CPSContApp(k: CPSVal, a: CPSVal) extends CPSExp
 case class CPSFunApp(f: CPSVar, a: CPSVar, k: CPSVar) extends CPSExp // the arguments are even CPSVar and not only CPSVal!
-case class CPSAdd(l: CPSVar, r: CPSVar) extends CPSExp
+case class CPSAdd(l: CPSVar, r: CPSVar) extends CPSVal
 
 /* With these definitions, we are now ready to formalize the transformation described above.
  * There is one technical issues: We need to introduce new names for binders into our program, such as 'k.
