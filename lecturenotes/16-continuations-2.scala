@@ -97,15 +97,15 @@ implicit def id2exp(s: Symbol) = Id(s)
    transformation. Correspondingly, we have two different forms of applications, CPSContApp and CPSFunApp.
    
    Here is the formal definition: */
-sealed abstract class CPSVal
-abstract class CPSExp extends CPSVal
+sealed abstract class CPSExp
+abstract class CPSVal extends CPSExp
 case class CPSNum(n: Int) extends CPSVal
 case class CPSCont(v: Symbol, body: CPSExp) extends CPSVal
 case class CPSFun(x: Symbol, k: Symbol, body: CPSExp) extends CPSVal
 case class CPSVar(x: Symbol) extends CPSVal { override def toString = x.toString }
 implicit def id2cpsexp(x: Symbol) = CPSVar(x)
 
-case class CPSContApp(k: CPSVal, a: CPSVal) extends CPSExp
+case class CPSContApp(k: CPSVal, a: CPSExp) extends CPSExp
 case class CPSFunApp(f: CPSVar, a: CPSVar, k: CPSVar) extends CPSExp // the arguments are even CPSVar and not only CPSVal!
 case class CPSAdd(l: CPSVar, r: CPSVar) extends CPSExp
 
