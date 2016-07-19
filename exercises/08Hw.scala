@@ -40,7 +40,7 @@ object Hw08 {
   /**
     * Transform examples below:
     * 2. (+ 1 (let/cc k (k 3))
-    * 3. (+ (let/cc k (k 3) 2)
+    * 3. (+ (let/cc k (k 3)) 2)
     * 4. (let/cc k 3)
     * 5. (+ 3
     *       (let/cc k
