@@ -55,7 +55,13 @@ object Values {
     def value : Value
   }  
   sealed abstract class Value extends ValueHolder { def value = this }
-  case class ValuePointer(var v: Value) extends ValueHolder { def value = v }
+  case class ValuePointer(var v: Value) extends ValueHolder {
+    def value =
+      if (v != null)
+        v
+      else
+        sys.error("Access to Letrec-defined variable must be guarded")
+  }
   case class NumV(n: Int) extends Value
   case class ClosureV(f: Fun, env: Env) extends Value
   type Env = Map[Symbol, ValueHolder] 
